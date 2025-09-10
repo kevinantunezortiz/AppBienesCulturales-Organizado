@@ -15,5 +15,5 @@ Este proyecto es el backend para el módulo `control_interno` del Museo Regional
 
 1. Clona el repositorio:
    ```bash
-   git clone https://github.com/tuusuario/AppBienesCulturales.git
+   git clone https://github.com/kevinantunezortiz/AppBienesCulturales-Organizado
    cd AppBienesCulturales

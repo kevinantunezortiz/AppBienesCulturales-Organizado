@@ -8,5 +8,6 @@ router.post('/', upload.array('imagenes', 10), controller.crearRegistro);
 router.get('/', controller.obtenerRegistros);
 router.put('/:id', upload.array('imagenes', 10), controller.actualizarRegistro);
 router.delete('/:id', controller.eliminarRegistro);
+router.get('/:id', controller.obtenerRegistroPorId);
 
 module.exports = router;

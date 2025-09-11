@@ -69,3 +69,16 @@ exports.eliminarRegistro = async (req, res) => {
     res.status(500).json({ error: 'Error al eliminar', details: error.message });
   }
 };
+
+
+exports.obtenerRegistroPorId = async (req, res) => {
+  try {
+    const registro = await ControlInterno.findById(req.params.id);
+    if (!registro) {
+      return res.status(404).json({ mensaje: 'Registro no encontrado' });
+    }
+    res.json(registro);
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error al obtener el registro', error });
+  }
+};

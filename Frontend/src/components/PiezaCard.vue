@@ -15,6 +15,11 @@
       <router-link :to="`/detalle/${pieza._id}`" class="btn btn-outline-primary btn-sm">
         Ver detalles
       </router-link>
+      <!-- PiezaCard.vue -->
+<button class="btn btn-sm btn-warning mt-2" @click="$emit('editar', pieza)">
+  ✏️ Editar
+</button>
+
     </div>
   </div>
 </template>

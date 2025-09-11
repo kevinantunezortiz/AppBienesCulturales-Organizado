@@ -1,93 +1,157 @@
 <template>
   <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h2>Piezas registradas</h2>
-      <router-link to="/registro" class="btn btn-success">Registrar nueva pieza</router-link>
+    <h2 class="mb-4">Bienes culturales</h2>
+    <div class="row">
+      <PiezaCard
+        v-for="pieza in piezas"
+        :key="pieza._id"
+        :pieza="pieza"
+        @editar="abrirModal"
+      />
     </div>
 
-    <div v-if="loading" class="text-center my-5">
-      <div class="spinner-border text-primary" role="status"></div>
-    </div>
+    <!-- Modal de edición -->
+    <div v-if="mostrarModal" class="modal fade show d-block" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content p-3">
+          <h5 class="modal-title">Editar pieza</h5>
+          <form @submit.prevent="actualizarPieza">
+            <!-- Número de control -->
+            <label class="form-label">Número de control</label>
+            <input v-model="piezaSeleccionada.numero_de_control" class="form-control mb-2" placeholder="Número de control" />
 
-    <div v-else-if="piezas.length === 0" class="alert alert-info">
-      No hay piezas registradas aún.
-    </div>
+            <!-- Nombre -->
+            <label class="form-label">Nombre</label>
+            <input v-model="piezaSeleccionada.nombre" class="form-control mb-2" placeholder="Nombre de la pieza" />
 
-    <div v-else class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-      <div class="col" v-for="pieza in piezas" :key="pieza._id">
-        <PiezaCard :pieza="pieza"  @editar="abrirModal"/>
+            <!-- Materia prima -->
+            <label class="form-label">Materia prima</label>
+            <input v-model="piezaSeleccionada.materia_prima" class="form-control mb-2" placeholder="Materia prima" />
+
+            <!-- Cultura -->
+            <label class="form-label">Cultura</label>
+            <input v-model="piezaSeleccionada.cultura" class="form-control mb-2" placeholder="Cultura" />
+
+            <!-- Procedencia -->
+            <label class="form-label">Procedencia</label>
+            <input v-model="piezaSeleccionada.procedencia" class="form-control mb-2" placeholder="Procedencia" />
+
+            <!-- Ubicación -->
+            <label class="form-label">Ubicación</label>
+            <input v-model="piezaSeleccionada.ubicacion" class="form-control mb-2" placeholder="Ubicación" />
+
+            <!-- Observaciones -->
+            <label class="form-label">Observaciones</label>
+            <textarea v-model="piezaSeleccionada.observaciones" class="form-control mb-2" placeholder="Observaciones"></textarea>
+
+            <!-- Imágenes nuevas -->
+            <label class="form-label">Imágenes nuevas</label>
+            <input type="file" multiple @change="manejarImagenes" class="form-control mb-2" />
+
+            <!-- Imágenes actuales -->
+            <div v-if="piezaSeleccionada.imagenes && piezaSeleccionada.imagenes.length">
+              <p class="fw-bold">Imágenes actuales:</p>
+              <div class="d-flex flex-wrap gap-2">
+                <img
+                  v-for="(img, index) in piezaSeleccionada.imagenes"
+                  :key="index"
+                  :src="img"
+                  class="img-thumbnail"
+                  style="width: 100px;"
+                />
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end mt-3">
+              <button type="submit" class="btn btn-success me-2">Guardar</button>
+              <button type="button" class="btn btn-secondary" @click="cerrarModal">Cancelar</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
+    <div v-if="mostrarModal" class="modal-backdrop fade show"></div>
   </div>
-  <div v-if="mostrarModal" class="modal fade show d-block" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content p-3">
-      <h5 class="modal-title">Editar pieza</h5>
-      <form @submit.prevent="actualizarPieza">
-        <input v-model="piezaSeleccionada.nombre" class="form-control mb-2" placeholder="Nombre" />
-        <textarea v-model="piezaSeleccionada.descripcion" class="form-control mb-2" placeholder="Descripción"></textarea>
-        <!-- Agrega más campos si los tienes -->
-        <div class="d-flex justify-content-end">
-          <button type="submit" class="btn btn-success me-2">Guardar</button>
-          <button type="button" class="btn btn-secondary" @click="cerrarModal">Cancelar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-<div v-if="mostrarModal" class="modal-backdrop fade show"></div>
-
 </template>
 
 <script>
 import axios from 'axios';
-import { getRegistros } from '../services/api';
 import PiezaCard from '../components/PiezaCard.vue';
 
 export default {
-  name: 'HomeView',
-  components: {
-    PiezaCard
-  },
+  components: { PiezaCard },
   data() {
     return {
       piezas: [],
-      loading: true,
+      piezaSeleccionada: null,
       mostrarModal: false,
-      piezaSeleccionada: null
+      nuevasImagenes: [],
     };
   },
-  async mounted() {
-    try {
-      const response = await getRegistros();
-      this.piezas = response.data;
-    } catch (error) {
-      console.error('Error al obtener piezas:', error);
-    } finally {
-      this.loading = false;
-    }
-  },
   methods: {
+    async obtenerPiezas() {
+      try {
+        const response = await axios.get('http://localhost:3000/api/control_interno');
+        this.piezas = response.data;
+      } catch (error) {
+        console.error('Error al cargar piezas:', error);
+      }
+    },
     abrirModal(pieza) {
       this.piezaSeleccionada = { ...pieza };
-    this.mostrarModal = true;
+      this.nuevasImagenes = [];
+      this.mostrarModal = true;
     },
     cerrarModal() {
-        this.mostrarModal = false;
-    this.piezaSeleccionada = null;
+      this.mostrarModal = false;
+      this.piezaSeleccionada = null;
+      this.nuevasImagenes = [];
+    },
+    manejarImagenes(event) {
+      this.nuevasImagenes = Array.from(event.target.files);
     },
     async actualizarPieza() {
       try {
-      const response = await axios.put(`http://localhost:3000/api/control_interno/${this.piezaSeleccionada._id}`, this.piezaSeleccionada);
-      const index = this.piezas.findIndex(p => p._id === this.piezaSeleccionada._id);
-      this.piezas[index] = response.data;
-      this.cerrarModal();
-      alert('✅ Pieza actualizada correctamente');
-    } catch (error) {
-      console.error('❌ Error al actualizar:', error);
-      alert('Hubo un problema al guardar los cambios');
+        const formData = new FormData();
+        formData.append('numero_de_control', this.piezaSeleccionada.numero_de_control);
+        formData.append('nombre', this.piezaSeleccionada.nombre);
+        formData.append('materia_prima', this.piezaSeleccionada.materia_prima);
+        formData.append('cultura', this.piezaSeleccionada.cultura);
+        formData.append('procedencia', this.piezaSeleccionada.procedencia);
+        formData.append('ubicacion', this.piezaSeleccionada.ubicacion);
+        formData.append('observaciones', this.piezaSeleccionada.observaciones);
+
+        this.nuevasImagenes.forEach(file => {
+          formData.append('imagenes', file);
+        });
+
+        const response = await axios.put(
+          `http://localhost:3000/api/control_interno/${this.piezaSeleccionada._id}`,
+          formData,
+          { headers: { 'Content-Type': 'multipart/form-data' } }
+        );
+
+        const index = this.piezas.findIndex(p => p._id === this.piezaSeleccionada._id);
+        this.piezas[index] = response.data;
+        this.cerrarModal();
+        alert('✅ Pieza actualizada correctamente');
+      } catch (error) {
+        console.error('❌ Error al actualizar:', error);
+        alert('Hubo un problema al guardar los cambios');
+      }
     }
-    }
+  },
+  mounted() {
+    this.obtenerPiezas();
   }
 };
 </script>
+
+<style scoped>
+.modal-backdrop {
+  z-index: 1040;
+}
+.modal {
+  z-index: 1050;
+}
+</style>

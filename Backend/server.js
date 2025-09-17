@@ -11,9 +11,6 @@ app.use(cors());
 const path = require('path');
 app.use(express.static(path.join(__dirname, '../Frontend/dist')));
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../Frontend/dist/index.html'));
-});
 
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Conectado a MongoDB'))
@@ -21,6 +18,9 @@ mongoose.connect(process.env.MONGODB_URI)
 
 const controlInternoRoutes = require('./routes/control_interno.routes');
 app.use('/api/control_interno', controlInternoRoutes);
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../Frontend/dist/index.html'));
+});
 
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);

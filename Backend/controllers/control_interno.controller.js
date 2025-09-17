@@ -27,6 +27,7 @@ exports.obtenerRegistros = async (req, res) => {
   try {
     const registros = await ControlInterno.find();
     res.status(200).json(registros);
+    console.log('Registros obtenidos:', registros);
   } catch (error) {
     res.status(500).json({ error: 'Error al obtener registros', details: error.message });
   }

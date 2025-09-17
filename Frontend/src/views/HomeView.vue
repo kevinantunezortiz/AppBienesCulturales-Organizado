@@ -127,7 +127,7 @@ export default {
         });
 
         const response = await axios.put(
-          `http://localhost:3000/api/control_interno/${this.piezaSeleccionada._id}`,
+          `https://appbienesculturales-organizado-1.onrender.com/api/control_interno/${this.piezaSeleccionada._id}`,
           formData,
           { headers: { 'Content-Type': 'multipart/form-data' } }
         );

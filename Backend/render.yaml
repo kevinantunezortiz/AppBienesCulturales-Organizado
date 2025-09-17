@@ -2,7 +2,9 @@ services:
   - type: web
     name: bienes-culturales-backend
     env: node
-    buildCommand: cd Backend && npm install
+    buildCommand: 
+      cd Frontend && npm install && npm run build
+      cd ../Backend && npm install
     startCommand: node server.js
     envVars:
       - key: MONGO_URI

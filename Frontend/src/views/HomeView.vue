@@ -77,7 +77,7 @@
 <script>
 import axios from 'axios';
 import PiezaCard from '../components/PiezaCard.vue';
-
+import { getRegistros } from '../services/api.js';
 export default {
   components: { PiezaCard },
   data() {
@@ -91,7 +91,7 @@ export default {
   methods: {
     async obtenerPiezas() {
       try {
-        const response = await axios.get('http://localhost:3000/api/control_interno');
+        const response = await getRegistros
         this.piezas = response.data;
       } catch (error) {
         console.error('Error al cargar piezas:', error);

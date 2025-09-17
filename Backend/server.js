@@ -8,6 +8,12 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cors());
+const path = require('path');
+app.use(express.static(path.join(__dirname, '../Frontend/dist')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../Frontend/dist/index.html'));
+});
 
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Conectado a MongoDB'))

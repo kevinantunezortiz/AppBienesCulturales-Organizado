@@ -93,7 +93,8 @@ export default {
       try {
       const response = await axios.get('https://appbienesculturales-organizado-1.onrender.com/api/control_interno');
       this.piezas = response.data;
-      console.log('✅ Piezas cargadas:', this.piezas);
+      console.log('✅ Piezas cargadas:');
+      this.piezas.forEach(p => console.log(p));
       } catch (error) {
         console.error('Error al cargar piezas:', error);
       }
